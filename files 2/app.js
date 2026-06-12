@@ -212,6 +212,7 @@ function hostRevealAnswer() {
   let correctCount = 0;
   let wrongCount = 0;
 
+  // pulos: não pontuam, não contam como erro
   Object.entries(state.answers).forEach(([pid, ans]) => {
     if (ans.skipped) {
       const player = state.players[pid];
@@ -219,11 +220,11 @@ function hostRevealAnswer() {
         player.lastCorrect = null;
         player.lastAnswerTime = ans.timeMs;
         player.lastPointsGained = 0;
-        player.alive = true;
       }
     }
   });
 
+  // respostas normais: ganha pontos se acertar, nada se errar (sem eliminação direta)
   Object.entries(state.answers).forEach(([pid, ans]) => {
     if (ans.skipped) return;
     const player = state.players[pid];
@@ -241,13 +242,12 @@ function hostRevealAnswer() {
     } else {
       wrongCount++;
       player.lastPointsGained = 0;
-      player.alive = false;
     }
   });
 
+  // quem não respondeu: conta como erro (sem pontos), tempo = tempo total
   Object.values(state.players).forEach(p => {
     if (!(p.id in state.answers) && p.alive) {
-      p.alive = false;
       p.lastCorrect = false;
       p.lastPointsGained = 0;
       p.lastAnswerTime = QUESTION_TIME_SECONDS * 1000;
@@ -255,10 +255,28 @@ function hostRevealAnswer() {
     }
   });
 
-  document.getElementById('answer-stats').textContent =
-    `${correctCount} acertaram · ${wrongCount} erraram ou não responderam`;
+  // ELIMINAÇÃO POR ÚLTIMO LUGAR: a partir da pergunta 3 (índice >= 2), elimina o último do ranking
+  let lastPlaceEliminated = null;
+  if (state.currentQuestionIndex >= 2) {
+    const aliveBefore = Object.values(state.players).filter(p => p.alive);
+    if (aliveBefore.length > 1) {
+      const sorted = aliveBefore.slice().sort((a, b) => {
+        if (a.points !== b.points) return a.points - b.points; // menor pontuação primeiro
+        const ta = a.lastAnswerTime ?? Infinity;
+        const tb = b.lastAnswerTime ?? Infinity;
+        return tb - ta; // maior tempo de resposta primeiro (pior desempate)
+      });
+      const loser = sorted[0];
+      loser.alive = false;
+      lastPlaceEliminated = loser.name;
+    }
+  }
 
-  if (wrongCount > 0 && audioFiles.wrong) {
+  document.getElementById('answer-stats').textContent = lastPlaceEliminated
+    ? `${correctCount} acertaram · ${wrongCount} erraram ou não responderam · eliminado: ${lastPlaceEliminated}`
+    : `${correctCount} acertaram · ${wrongCount} erraram ou não responderam`;
+
+  if (lastPlaceEliminated && audioFiles.wrong) {
     audioEls.wrong.currentTime = 0;
     audioEls.wrong.play().catch(()=>{});
   } else if (audioFiles.correct) {
@@ -270,7 +288,7 @@ function hostRevealAnswer() {
   document.getElementById('btn-next').disabled = false;
 
   const aliveCount = Object.values(state.players).filter(p=>p.alive).length;
-  if (wrongCount > 0 && aliveCount > 0) {
+  if (lastPlaceEliminated && aliveCount > 0) {
     document.getElementById('btn-rescue').style.display = 'inline-flex';
   }
 
