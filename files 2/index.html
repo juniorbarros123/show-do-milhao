@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Show do Milhão - Ao Vivo</title>
+<style>
+  :root{
+    --bg: #0b1020;
+    --bg2: #131a33;
+    --gold: #ffd54a;
+    --gold-dark: #b8860b;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --blue: #3a8dde;
+    --text: #ffffff;
+    --muted: #9aa3c0;
+    --card: #1b2447;
+    --card-border: #2c3868;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(ellipse at top, var(--bg2), var(--bg));
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .hidden{display:none !important;}
+
+  /* ============ LAYOUT ============ */
+  .screen{
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    text-align:center;
+  }
+  .container{
+    width:100%;
+    max-width: 900px;
+  }
+
+  /* ============ TYPOGRAPHY ============ */
+  h1{
+    font-size: clamp(28px, 5vw, 56px);
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,213,74,.5);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  h2{
+    font-size: clamp(20px, 3.5vw, 36px);
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  p.subtitle{ color: var(--muted); font-size: 16px; margin-bottom: 24px; }
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+    color: #14172b;
+    background: var(--gold);
+    box-shadow: 0 4px 0 var(--gold-dark);
+  }
+  .btn:active{ transform: translateY(3px); box-shadow: 0 1px 0 var(--gold-dark); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn.secondary{
+    background: transparent;
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    box-shadow:none;
+  }
+  .btn.small{ padding: 8px 16px; font-size: 14px; border-radius: 10px; }
+  .btn.danger{ background: var(--red); color:#fff; box-shadow: 0 4px 0 #8e2d22; }
+  .btn.full{ width:100%; }
+
+  /* ============ INPUT ============ */
+  input[type=text]{
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    border-radius: 14px;
+    border: 2px solid var(--card-border);
+    background: var(--card);
+    color: var(--text);
+    text-align:center;
+    margin-bottom: 16px;
+  }
+  input[type=text]:focus{ outline:none; border-color: var(--gold); }
+
+  /* ============ HOST: QR / LOBBY ============ */
+  .qr-box{
+    background:#fff; padding:20px; border-radius: 16px; display:inline-block; margin: 16px auto;
+  }
+  .qr-box img{ display:block; width: 220px; height:220px; }
+  .lobby-players{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:24px; max-height: 240px; overflow-y:auto;
+  }
+  .lobby-chip{
+    background: var(--card); border:1px solid var(--card-border); border-radius: 999px;
+    padding: 8px 16px; font-size:15px; display:flex; align-items:center; gap:8px;
+  }
+  .lobby-chip .avatar{ width:24px; height:24px; border-radius:50%; background: var(--gold); display:flex; align-items:center; justify-content:center; font-size:12px; color:#14172b; font-weight:700; }
+  .lobby-count{ font-size: 22px; color: var(--gold); font-weight:700; margin-top: 8px; }
+
+  /* ============ HOST: QUESTION SCREEN ============ */
+  .question-card{
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 40px rgba(255,213,74,.08);
+  }
+  .question-meta{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;
+    font-size: 14px; color: var(--muted);
+  }
+  .question-text{
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .timer-bar-wrap{
+    width:100%; height: 14px; background: var(--bg); border-radius: 999px; overflow:hidden; margin: 16px 0;
+    border:1px solid var(--card-border);
+  }
+  .timer-bar{
+    height:100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--red));
+    width:100%; transition: width 0.1s linear;
+  }
+  .timer-num{
+    font-size: 48px; font-weight: 800; color: var(--gold);
+  }
+  .options-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
+  }
+  @media (max-width: 600px){ .options-grid{ grid-template-columns: 1fr; } }
+  .option{
+    padding: 18px; border-radius: 14px; font-size: 18px; font-weight:600;
+    border: 2px solid var(--card-border); background: var(--bg2); text-align:left;
+    display:flex; align-items:center; gap:12px; position:relative;
+    transition: all .2s ease;
+  }
+  .option .shape{
+    width:28px; height:28px; border-radius:6px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
+  }
+  .option.A .shape{ background: var(--red); }
+  .option.B .shape{ background: var(--blue); }
+  .option.C .shape{ background: var(--gold); color:#14172b; }
+  .option.D .shape{ background: var(--green); }
+  .option.correct{ border-color: var(--green); background: rgba(46,204,113,.15); }
+  .option.correct::after{
+    content:'✓'; position:absolute; right:16px; color: var(--green); font-size:24px; font-weight:800;
+  }
+  .answer-stats{
+    font-size:13px; color: var(--muted); margin-top:6px;
+  }
+
+  /* ============ STATUS BAR ============ */
+  .status-bar{
+    display:flex; justify-content:center; gap: 24px; margin-bottom: 16px; flex-wrap:wrap;
+  }
+  .status-pill{
+    background: var(--card); border:1px solid var(--card-border); border-radius: 999px;
+    padding: 8px 18px; font-size:14px; display:flex; align-items:center; gap:8px;
+  }
+  .status-pill b{ color: var(--gold); font-size:18px; }
+  .status-pill.eliminated b{ color: var(--red); }
+
+  /* ============ RANKING ============ */
+  .ranking-list{ display:flex; flex-direction:column; gap:10px; margin-top: 16px; }
+  .rank-row{
+    display:flex; align-items:center; gap:14px;
+    background: var(--card); border:1px solid var(--card-border); border-radius: 14px;
+    padding: 12px 18px; transition: transform .4s ease;
+  }
+  .rank-row.top1{ border-color: var(--gold); box-shadow: 0 0 20px rgba(255,213,74,.25); }
+  .rank-row .pos{ font-size:20px; font-weight:800; color: var(--gold); width:34px; }
+  .rank-row .avatar{
+    width:40px; height:40px; border-radius:50%; background: var(--blue);
+    display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; overflow:hidden;
+  }
+  .rank-row .avatar img{ width:100%; height:100%; object-fit:cover; }
+  .rank-row .name{ flex:1; text-align:left; font-weight:600; font-size:16px; }
+  .rank-row .pts{ font-weight:800; color: var(--gold); font-size:18px; }
+  .rank-row.eliminated{ opacity:.4; }
+  .rank-row.eliminated .name::after{ content:' (eliminado)'; font-size:12px; color: var(--red); font-weight:400; }
+
+  /* ============ ALIVE COUNTER ============ */
+  .alive-banner{
+    display:inline-flex; align-items:center; gap:10px; background: var(--card);
+    border:2px solid var(--gold); border-radius: 999px; padding: 10px 24px; margin: 0 auto 20px;
+    font-size: 18px; font-weight:700;
+  }
+  .alive-banner .num{ color: var(--gold); font-size: 26px; }
+
+  /* ============ PLAYER VIEW ============ */
+  .player-option{
+    width:100%; padding: 28px; border-radius: 16px; font-size: 22px; font-weight:800;
+    border:none; color:#fff; margin-bottom: 14px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    transition: transform .1s ease, opacity .2s ease;
+  }
+  .player-option:active{ transform: scale(.97); }
+  .player-option.A{ background: var(--red); }
+  .player-option.B{ background: var(--blue); }
+  .player-option.C{ background: var(--gold-dark); }
+  .player-option.D{ background: var(--green); }
+  .player-option.locked{ opacity:.35; pointer-events:none; }
+  .player-option .shape{
+    width:32px; height:32px; border-radius:8px; background: rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center; font-weight:800;
+  }
+  .feedback-banner{
+    font-size: clamp(28px, 8vw, 48px); font-weight:900; margin: 24px 0;
+  }
+  .feedback-banner.correct{ color: var(--green); }
+  .feedback-banner.wrong{ color: var(--red); }
+  .player-points{
+    font-size:14px; color: var(--muted); margin-top:8px;
+  }
+
+  /* ============ HELP CARDS (rescue / skip) ============ */
+  .helpers{
+    display:flex; gap: 12px; justify-content:center; margin: 16px 0; flex-wrap:wrap;
+  }
+  .helper-btn{
+    background: var(--card); border: 2px solid var(--card-border); border-radius: 14px;
+    padding: 12px 18px; font-size:14px; font-weight:700; color: var(--text); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:6px; min-width:110px;
+  }
+  .helper-btn .icon{ font-size:26px; }
+  .helper-btn:disabled{ opacity:.3; cursor:not-allowed; }
+  .helper-btn.active{ border-color: var(--gold); box-shadow:0 0 14px rgba(255,213,74,.3); }
+
+  /* ============ CHAMPION SCREEN ============ */
+  .champion-name{
+    font-size: clamp(36px, 8vw, 72px); color: var(--gold); font-weight:900;
+    text-shadow: 0 0 30px rgba(255,213,74,.6); margin: 16px 0;
+  }
+  .champion-avatar{
+    width:160px; height:160px; border-radius:50%; border:6px solid var(--gold);
+    margin: 0 auto 16px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background: var(--card); font-size:64px;
+  }
+  .champion-avatar img{ width:100%; height:100%; object-fit:cover; }
+
+  /* confetti */
+  .confetti{
+    position:fixed; top:-10px; width:10px; height:10px; opacity:.9; pointer-events:none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(720deg); opacity:0; }
+  }
+
+  /* ============ AUDIO PANEL (host setup) ============ */
+  .audio-panel{
+    text-align:left; background: var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding: 16px; margin-top: 16px; font-size:14px;
+  }
+  .audio-panel label{ display:block; margin: 10px 0 4px; color: var(--muted); }
+  .audio-panel input[type=file]{ width:100%; color: var(--text); }
+  .audio-note{ font-size:12px; color: var(--muted); margin-top:4px; }
+
+  /* role select removed - host is now default landing */
+
+  /* small footer note */
+  .tiny-note{ font-size:12px; color: var(--muted); margin-top: 24px; }
+  .pending-tag{
+    display:inline-block; background: var(--card); border:1px dashed var(--gold);
+    color: var(--gold); font-size:11px; padding: 2px 8px; border-radius:6px; margin-left:6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HOST: LOBBY (TELA INICIAL) -->
+<!-- ============================================================ -->
+<div id="screen-host-lobby" class="screen">
+  <div class="container">
+    <h1>Show do Milhão</h1>
+    <p class="subtitle">Escaneie o QR Code para entrar no jogo</p>
+    <div class="qr-box">
+      <img id="qr-img" src="" alt="QR Code para entrar no jogo">
+    </div>
+    <div class="lobby-count"><span id="lobby-count">0</span> jogador(es) conectado(s)</div>
+    <div class="lobby-players" id="lobby-players"></div>
+
+    <div style="margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn" onclick="hostStartGame()">Iniciar jogo</button>
+      <button class="btn secondary" onclick="toggleAudioPanel()">Configurar áudio</button>
+    </div>
+
+    <div id="audio-panel" class="audio-panel hidden">
+      <strong>Música do telão (durante as perguntas)</strong>
+      <label for="audio-bg">Trilha de tensão / contagem regressiva</label>
+      <input type="file" id="audio-bg" accept="audio/*" onchange="loadAudio('bg', this)">
+      <div class="audio-note">
+        Sugestão: trilhas de "game show tension" / "quiz countdown" em bancos livres (Pixabay Music, Mixkit, YouTube Audio Library). Pode usar a própria trilha do "Show do Milhão" se vocês possuírem os direitos de uso.
+      </div>
+
+      <label for="audio-correct">Efeito sonoro - resposta correta</label>
+      <input type="file" id="audio-correct" accept="audio/*" onchange="loadAudio('correct', this)">
+
+      <label for="audio-wrong">Efeito sonoro - resposta errada / eliminação</label>
+      <input type="file" id="audio-wrong" accept="audio/*" onchange="loadAudio('wrong', this)">
+      <div class="audio-note">Sugestão: "buzzer wrong answer" / "correct ding" — Mixkit ou Pixabay (gratuitos).</div>
+
+      <label for="audio-champion">Vinheta do campeão final (comemoração)</label>
+      <input type="file" id="audio-champion" accept="audio/*" onchange="loadAudio('champion', this)">
+      <div class="audio-note">
+        <span class="pending-tag">PENDÊNCIA</span> Vinheta de gol/comemoração do time. Use um trecho que vocês possuam os direitos de uso (gravação própria do festejo, ou trilha de "vitória/comemoração" de banco livre). Vinhetas oficiais de emissoras/times são protegidas por direitos autorais.
+      </div>
+    </div>
+
+    <p class="tiny-note">
+      Avatares dos jogadores (estilo seleção brasileira, desenho animado) <span class="pending-tag">PENDÊNCIA</span> — aguardando arquivos. Por enquanto, cada jogador recebe um avatar com iniciais.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- HOST: QUESTION -->
+<!-- ============================================================ -->
+<div id="screen-host-question" class="screen hidden">
+  <div class="container">
+    <div class="alive-banner">
+      Ainda na disputa: <span class="num" id="alive-count">0</span> de <span id="total-count">0</span>
+    </div>
+
+    <div class="question-card">
+      <div class="question-meta">
+        <span>Pergunta <span id="q-number">1</span> de <span id="q-total">16</span></span>
+        <span id="q-value">R$ 1.000</span>
+      </div>
+      <div class="question-text" id="q-text">Carregando pergunta...</div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+      <div class="timer-num" id="timer-num">15</div>
+
+      <div class="options-grid" id="options-grid"></div>
+      <div class="answer-stats" id="answer-stats"></div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn" id="btn-reveal" onclick="hostRevealAnswer()">Revelar resposta</button>
+      <button class="btn secondary" id="btn-next" onclick="hostNextQuestion()" disabled>Próxima pergunta</button>
+      <button class="btn secondary" id="btn-rescue" onclick="hostStartRescue()" style="display:none;">Iniciar resgate da audiência</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- HOST: RANKING -->
+<!-- ============================================================ -->
+<div id="screen-host-ranking" class="screen hidden">
+  <div class="container">
+    <h2>Ranking</h2>
+    <div class="alive-banner">
+      Ainda na disputa: <span class="num" id="alive-count-2">0</span> de <span id="total-count-2">0</span>
+    </div>
+    <div class="ranking-list" id="ranking-list"></div>
+    <div style="margin-top:24px;">
+      <button class="btn" onclick="hostNextQuestion(true)">Próxima pergunta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- HOST: CHAMPION -->
+<!-- ============================================================ -->
+<div id="screen-host-champion" class="screen hidden">
+  <div class="container">
+    <h2>🏆 Campeão do Show do Milhão! 🏆</h2>
+    <div class="champion-avatar" id="champion-avatar">🏆</div>
+    <div class="champion-name" id="champion-name">---</div>
+    <p class="subtitle" id="champion-points">0 pontos</p>
+    <p class="tiny-note">
+      Vinheta de comemoração <span class="pending-tag">PENDÊNCIA</span> — toca aqui automaticamente se carregada na tela de lobby.
+    </p>
+    <button class="btn secondary" onclick="restartGame()" style="margin-top:24px;">Reiniciar jogo</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: JOIN -->
+<!-- ============================================================ -->
+<div id="screen-player-join" class="screen hidden">
+  <div class="container">
+    <h1>Show do Milhão</h1>
+    <p class="subtitle">Digite seu nome para entrar no jogo</p>
+    <input type="text" id="player-name-input" placeholder="Seu nome" maxlength="16">
+    <button class="btn full" onclick="playerJoin()">Entrar</button>
+    <p class="tiny-note">Avatares da seleção brasileira (desenho animado) serão atribuídos automaticamente — <span class="pending-tag">pendência de arquivos</span>.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: WAITING -->
+<!-- ============================================================ -->
+<div id="screen-player-waiting" class="screen hidden">
+  <div class="container">
+    <div class="champion-avatar" id="player-avatar" style="width:90px; height:90px; font-size:32px;"></div>
+    <h2 id="player-welcome">Você está dentro!</h2>
+    <p class="subtitle">Aguardando o apresentador iniciar o jogo...</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: QUESTION -->
+<!-- ============================================================ -->
+<div id="screen-player-question" class="screen hidden">
+  <div class="container">
+    <div class="status-bar">
+      <div class="status-pill">Pontos: <b id="player-points-live">0</b></div>
+      <div class="status-pill" id="player-status-pill">Status: <b id="player-status">Vivo</b></div>
+    </div>
+    <p class="subtitle">Toque na resposta correta. Olhe a pergunta no telão!</p>
+    <div class="timer-num" id="player-timer" style="font-size:64px; margin-bottom:20px;">15</div>
+    <div id="player-options"></div>
+
+    <div class="helpers">
+      <button class="helper-btn" id="btn-skip" onclick="playerUseSkip()">
+        <span class="icon">⏭️</span> Pular pergunta
+        <span style="font-size:11px; color:var(--muted);" id="skip-count">1 disponível</span>
+      </button>
+      <button class="helper-btn" id="btn-rescue-vote" onclick="playerVoteRescue()" style="display:none;">
+        <span class="icon">🙌</span> Resgatar jogador
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: FEEDBACK -->
+<!-- ============================================================ -->
+<div id="screen-player-feedback" class="screen hidden">
+  <div class="container">
+    <div class="feedback-banner" id="player-feedback-text">...</div>
+    <div class="player-points" id="player-feedback-points"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: ELIMINATED -->
+<!-- ============================================================ -->
+<div id="screen-player-eliminated" class="screen hidden">
+  <div class="container">
+    <h2 style="color: var(--red);">Você foi eliminado!</h2>
+    <p class="subtitle">Continue acompanhando o ranking no telão. Você pode ser chamado para votar no <b>resgate da audiência</b>.</p>
+    <div class="helpers">
+      <button class="helper-btn" id="btn-rescue-vote-2" onclick="playerVoteRescue()" style="display:none;">
+        <span class="icon">🙌</span> Votar para resgatar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PLAYER: CHAMPION -->
+<!-- ============================================================ -->
+<div id="screen-player-champion" class="screen hidden">
+  <div class="container">
+    <h2 id="player-champion-title">Fim de jogo!</h2>
+    <div class="champion-name" id="player-final-name">---</div>
+    <p class="subtitle" id="player-final-msg"></p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
