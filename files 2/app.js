@@ -659,6 +659,8 @@ function listenToEvents() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  console.log('DEBUG hash:', window.location.hash, '| href:', window.location.href);
+  document.title = 'HASH=' + window.location.hash;
   if (window.location.hash === '#join') {
     goToPlayer();
   } else {
