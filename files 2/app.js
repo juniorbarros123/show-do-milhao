@@ -23,9 +23,10 @@ let myRole = null;
 let myPlayerId = null;
 let myPlayerName = null;
 
-const audioFiles = { bg: null, correct: null, wrong: null, champion: null };
-const audioEls = { bg: new Audio(), correct: new Audio(), wrong: new Audio(), champion: new Audio() };
+const audioFiles = { lobby: null, bg: null, correct: null, wrong: null, champion: null };
+const audioEls = { lobby: new Audio(), bg: new Audio(), correct: new Audio(), wrong: new Audio(), champion: new Audio() };
 audioEls.bg.loop = true;
+audioEls.lobby.loop = true;
 
 function loadAudio(key, input) {
   const file = input.files[0];
@@ -33,6 +34,10 @@ function loadAudio(key, input) {
   const url = URL.createObjectURL(file);
   audioFiles[key] = url;
   audioEls[key].src = url;
+  if (key === 'lobby' && myRole === 'host' && state.phase === 'lobby') {
+    audioEls.lobby.currentTime = 0;
+    audioEls.lobby.play().catch(()=>{});
+  }
 }
 
 function toggleAudioPanel() {
@@ -118,6 +123,7 @@ function hostStartGame() {
     alert('Aguardando jogadores entrarem...');
     return;
   }
+  audioEls.lobby.pause();
   state.phase = 'question';
   state.currentQuestionIndex = 0;
   startQuestionRound();
@@ -416,8 +422,13 @@ function launchConfetti() {
 
 function restartGame() {
   document.querySelectorAll('.confetti').forEach(c=>c.remove());
+  audioEls.champion.pause();
   initHostLobby();
   showScreen('screen-host-lobby');
+  if (audioFiles.lobby) {
+    audioEls.lobby.currentTime = 0;
+    audioEls.lobby.play().catch(()=>{});
+  }
 }
 
 function playerJoin() {
