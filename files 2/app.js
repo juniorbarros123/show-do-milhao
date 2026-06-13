@@ -268,11 +268,14 @@ function hostRevealAnswer() {
   });
 
   // ELIMINAÇÃO POR ÚLTIMO LUGAR: a partir da pergunta 3 (índice >= 2), elimina o último do ranking
+  // Quem acertou a pergunta desta rodada nunca é eliminado, mesmo estando em último na pontuação total.
   let lastPlaceEliminated = null;
   if (state.currentQuestionIndex >= 2) {
     const aliveBefore = Object.values(state.players).filter(p => p.alive);
-    if (aliveBefore.length > 1) {
-      const sorted = aliveBefore.slice().sort((a, b) => {
+    // candidatos à eliminação: vivos que NÃO acertaram a pergunta desta rodada
+    const eligibleForElimination = aliveBefore.filter(p => p.lastCorrect !== true);
+    if (eligibleForElimination.length > 0 && aliveBefore.length > 1) {
+      const sorted = eligibleForElimination.slice().sort((a, b) => {
         if (a.points !== b.points) return a.points - b.points; // menor pontuação primeiro
         const ta = a.lastAnswerTime ?? Infinity;
         const tb = b.lastAnswerTime ?? Infinity;
