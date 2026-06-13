@@ -429,6 +429,13 @@
   .lobby-audio-panel label{ display:block; margin: 10px 0 4px; color: #9fb1c4; }
   .lobby-audio-panel input[type=file]{ width:100%; color: #fff; }
   .lobby-audio-note{ font-size:12px; color: #6b7d8f; margin-top:4px; }
+  .lobby-audio-icon-btn{
+    background: rgba(255,255,255,.06); border:1px solid rgba(255,212,0,.3);
+    color:#FFD400; font-size:18px; width:40px; height:40px; border-radius:50%;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    margin-top:14px; transition: background .15s ease;
+  }
+  .lobby-audio-icon-btn:hover{ background: rgba(255,212,0,.15); }
 </style>
 
 </head>
@@ -464,34 +471,27 @@
 
     <div class="lobby-buttons">
       <button class="lobby-btn-primary" onclick="hostStartGame()">Iniciar jogo</button>
-      <button class="lobby-btn-secondary" onclick="toggleAudioPanel()">Configurar áudio</button>
     </div>
+    <button class="lobby-audio-icon-btn" onclick="toggleAudioPanel()" title="Configurar áudio" aria-label="Configurar áudio">🔊</button>
 
     <div id="audio-panel" class="lobby-audio-panel hidden">
-      <strong>Música do telão (durante as perguntas)</strong>
+      <strong>Música do lobby (sala de espera)</strong>
+      <label for="audio-lobby">Trilha ambiente enquanto os jogadores entram</label>
+      <input type="file" id="audio-lobby" accept="audio/*" onchange="loadAudio('lobby', this)">
+
+      <strong style="display:block; margin-top:16px;">Música do telão (durante as perguntas)</strong>
       <label for="audio-bg">Trilha de tensão / contagem regressiva</label>
       <input type="file" id="audio-bg" accept="audio/*" onchange="loadAudio('bg', this)">
-      <div class="lobby-audio-note">
-        Sugestão: trilhas de "game show tension" / "quiz countdown" em bancos livres (Pixabay Music, Mixkit, YouTube Audio Library). Pode usar a própria trilha do "Show do Milhão" se vocês possuírem os direitos de uso.
-      </div>
 
       <label for="audio-correct">Efeito sonoro - resposta correta</label>
       <input type="file" id="audio-correct" accept="audio/*" onchange="loadAudio('correct', this)">
 
       <label for="audio-wrong">Efeito sonoro - resposta errada / eliminação</label>
       <input type="file" id="audio-wrong" accept="audio/*" onchange="loadAudio('wrong', this)">
-      <div class="lobby-audio-note">Sugestão: "buzzer wrong answer" / "correct ding" — Mixkit ou Pixabay (gratuitos).</div>
 
       <label for="audio-champion">Vinheta do campeão final (comemoração)</label>
       <input type="file" id="audio-champion" accept="audio/*" onchange="loadAudio('champion', this)">
-      <div class="lobby-audio-note">
-        <span class="lobby-pending-tag">PENDÊNCIA</span> Vinheta de gol/comemoração do time. Use um trecho que vocês possuam os direitos de uso (gravação própria do festejo, ou trilha de "vitória/comemoração" de banco livre). Vinhetas oficiais de emissoras/times são protegidas por direitos autorais.
-      </div>
     </div>
-
-    <p class="lobby-footnote">
-      Avatares dos jogadores (estilo seleção brasileira, desenho animado) <span class="lobby-pending-tag">PENDÊNCIA</span> — aguardando arquivos. Por enquanto, cada jogador recebe um avatar com iniciais.
-    </p>
   </div>
 </div>
 
