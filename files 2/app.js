@@ -149,7 +149,12 @@ function startQuestionRound() {
     if (state.timer <= 0) {
       state.timer = 0;
       clearInterval(timerInterval);
-      hostRevealAnswer();
+      updateTimerUI();
+      stateRef.child('timer').set(0);
+      // pequeno atraso para garantir que respostas enviadas no último instante
+      // (gravadas no Firebase) cheguem antes de revelar a resposta
+      setTimeout(hostRevealAnswer, 600);
+      return;
     }
     updateTimerUI();
     if (Math.abs(lastPushed - state.timer) >= 0.4 || state.timer === 0) {
@@ -317,7 +322,8 @@ function tallyRescueVotes() {
   Object.entries(votes).forEach(([pid, count]) => {
     if (count > max) { max = count; winnerId = pid; }
   });
-  if (winnerId && state.players[winnerId]) {
+  // Resgate só ocorre com mais de 1 voto (não basta o próprio eliminado votar em si mesmo)
+  if (winnerId && max > 1 && state.players[winnerId]) {
     state.players[winnerId].alive = true;
     state.players[winnerId].rescued = true;
   }
@@ -517,7 +523,16 @@ function updateRescueVoteButton(btnId) {
 function playerVoteRescue() {
   const eliminatedList = Object.values(state.players).filter(p => p.alive === false);
   if (eliminatedList.length === 0) return;
-  const target = eliminatedList[0];
+
+  // Se houver apenas 1 eliminado e for o próprio jogador, ele não pode votar em si mesmo
+  if (eliminatedList.length === 1 && eliminatedList[0].id === myPlayerId) {
+    alert('Você não pode votar para resgatar a si mesmo.');
+    return;
+  }
+
+  // jogador não pode votar para resgatar a si mesmo, mesmo havendo outros eliminados
+  const target = eliminatedList.find(p => p.id !== myPlayerId) || eliminatedList[0];
+
   eventsRef.push({
     type: 'rescue_vote',
     payload: { voterId: myPlayerId, votedFor: target.id },
@@ -635,7 +650,7 @@ function listenToEvents() {
       }
     }
     if (type === 'player_answer') {
-      if (state.phase === 'question' && !state.answers[payload.id]) {
+      if (!state.answers[payload.id]) {
         state.answers[payload.id] = { optionIndex: payload.optionIndex, timeMs: payload.timeMs };
       }
     }
