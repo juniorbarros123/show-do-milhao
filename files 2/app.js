@@ -87,7 +87,8 @@ function initHostLobby() {
 
   eventsRef.remove();
 
-  const joinUrl = window.location.href.split('?')[0] + '?join=1';
+  const baseUrl = window.location.origin + window.location.pathname;
+  const joinUrl = baseUrl + '#join';
   const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(joinUrl)}`;
   document.getElementById('qr-img').src = qrApi;
 
@@ -658,8 +659,7 @@ function listenToEvents() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('join') === '1') {
+  if (window.location.hash === '#join') {
     goToPlayer();
   } else {
     goToHost();
