@@ -664,9 +664,4 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     goToHost();
   }
-  setTimeout(() => {
-    const lobby = document.getElementById('screen-host-lobby');
-    const join = document.getElementById('screen-player-join');
-    document.title = 'lobby-hidden=' + lobby.classList.contains('hidden') + ' join-hidden=' + join.classList.contains('hidden') + ' role=' + myRole;
-  }, 500);
 });
