@@ -3,30 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Show do Milhão - Ao Vivo</title>
+<title>Show do Bilhão - Ao Vivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0b1020;
-    --bg2: #131a33;
-    --gold: #ffd54a;
-    --gold-dark: #b8860b;
-    --green: #2ecc71;
+    --bg: #07121f;
+    --bg2: #0a2519;
+    --bg3: #0d3a26;
+    --gold: #FFD400;
+    --gold-dark: #C9A400;
+    --green: #00913F;
+    --green-bright: #00C86E;
     --red: #e74c3c;
-    --blue: #3a8dde;
+    --blue: #1C2D6B;
     --text: #ffffff;
-    --muted: #9aa3c0;
-    --card: #1b2447;
-    --card-border: #2c3868;
+    --muted: #9fb1c4;
+    --muted2: #6b7d8f;
+    --card: rgba(255,255,255,.05);
+    --card-border: rgba(255,212,0,.25);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: radial-gradient(ellipse at top, var(--bg2), var(--bg));
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: radial-gradient(125% 120% at 50% -5%, var(--bg3) 0%, var(--bg2) 42%, var(--bg) 100%);
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+  }
+  body::before{
+    content:'';
+    position: fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 44px, rgba(255,212,0,.045) 44px 46px),
+      repeating-linear-gradient(-45deg, transparent 0 44px, rgba(255,212,0,.045) 44px 46px);
   }
   .hidden{display:none !important;}
+
+  .brand-logo{
+    position:fixed; top:16px; left:16px; height:36px; width:auto; z-index:10;
+  }
+  @media (min-width: 900px){
+    .brand-logo{ top:24px; left:24px; height:48px; }
+  }
 
   /* ============ LAYOUT ============ */
   .screen{
@@ -37,6 +58,8 @@
     justify-content:center;
     padding: 24px;
     text-align:center;
+    position: relative;
+    z-index: 1;
   }
   .container{
     width:100%;
@@ -45,16 +68,24 @@
 
   /* ============ TYPOGRAPHY ============ */
   h1{
-    font-size: clamp(28px, 5vw, 56px);
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(32px, 6vw, 72px);
     color: var(--gold);
-    text-shadow: 0 0 20px rgba(255,213,74,.5);
-    letter-spacing: 1px;
+    text-shadow: 0 0 30px rgba(255,212,0,.5);
+    letter-spacing: .01em;
     margin-bottom: 8px;
+    line-height: 1;
   }
   h2{
-    font-size: clamp(20px, 3.5vw, 36px);
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(22px, 4vw, 40px);
     color: var(--gold);
     margin-bottom: 16px;
+    line-height: 1.1;
   }
   p.subtitle{ color: var(--muted); font-size: 16px; margin-bottom: 24px; }
 
@@ -62,22 +93,23 @@
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
     padding: 14px 28px;
+    font-family: 'Manrope', sans-serif;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     cursor: pointer;
     transition: transform .12s ease, box-shadow .12s ease;
-    color: #14172b;
+    color: #0b2417;
     background: var(--gold);
-    box-shadow: 0 4px 0 var(--gold-dark);
+    box-shadow: 0 7px 0 var(--gold-dark);
   }
-  .btn:active{ transform: translateY(3px); box-shadow: 0 1px 0 var(--gold-dark); }
+  .btn:active{ transform: translateY(4px); box-shadow: 0 3px 0 var(--gold-dark); }
   .btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
   .btn.secondary{
     background: transparent;
     color: var(--gold);
-    border: 2px solid var(--gold);
+    border: 2px solid rgba(255,212,0,.85);
     box-shadow:none;
   }
   .btn.small{ padding: 8px 16px; font-size: 14px; border-radius: 10px; }
@@ -115,12 +147,12 @@
 
   /* ============ HOST: QUESTION SCREEN ============ */
   .question-card{
-    background: var(--card);
-    border: 1px solid var(--card-border);
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,212,0,.25);
     border-radius: 20px;
     padding: 32px;
     margin-bottom: 24px;
-    box-shadow: 0 0 40px rgba(255,213,74,.08);
+    box-shadow: 0 0 40px rgba(255,212,0,.08);
   }
   .question-meta{
     display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;
@@ -133,15 +165,16 @@
     margin-bottom: 8px;
   }
   .timer-bar-wrap{
-    width:100%; height: 14px; background: var(--bg); border-radius: 999px; overflow:hidden; margin: 16px 0;
-    border:1px solid var(--card-border);
+    width:100%; height: 14px; background: rgba(0,0,0,.3); border-radius: 999px; overflow:hidden; margin: 16px 0;
+    border:1px solid rgba(255,212,0,.25);
   }
   .timer-bar{
-    height:100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--red));
+    height:100%; background: linear-gradient(90deg, var(--green-bright), var(--gold), var(--red));
     width:100%; transition: width 0.1s linear;
   }
   .timer-num{
-    font-size: 48px; font-weight: 800; color: var(--gold);
+    font-family: 'Anton', sans-serif;
+    font-size: 48px; font-weight: 400; color: var(--gold);
   }
   .options-grid{
     display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
@@ -149,7 +182,7 @@
   @media (max-width: 600px){ .options-grid{ grid-template-columns: 1fr; } }
   .option{
     padding: 18px; border-radius: 14px; font-size: 18px; font-weight:600;
-    border: 2px solid var(--card-border); background: var(--bg2); text-align:left;
+    border: 2px solid rgba(255,212,0,.2); background: rgba(255,255,255,.03); text-align:left;
     display:flex; align-items:center; gap:12px; position:relative;
     transition: all .2s ease;
   }
@@ -157,13 +190,13 @@
     width:28px; height:28px; border-radius:6px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;
   }
-  .option.A .shape{ background: var(--red); }
-  .option.B .shape{ background: var(--blue); }
-  .option.C .shape{ background: var(--gold); color:#14172b; }
-  .option.D .shape{ background: var(--green); }
-  .option.correct{ border-color: var(--green); background: rgba(46,204,113,.15); }
+  .option.A .shape{ background: var(--red); color:#fff; }
+  .option.B .shape{ background: var(--blue); color:#fff; }
+  .option.C .shape{ background: var(--gold); color:#0b2417; }
+  .option.D .shape{ background: var(--green); color:#fff; }
+  .option.correct{ border-color: var(--green-bright); background: rgba(0,200,110,.12); }
   .option.correct::after{
-    content:'✓'; position:absolute; right:16px; color: var(--green); font-size:24px; font-weight:800;
+    content:'✓'; position:absolute; right:16px; color: var(--green-bright); font-size:24px; font-weight:800;
   }
   .answer-stats{
     font-size:13px; color: var(--muted); margin-top:6px;
@@ -217,13 +250,14 @@
   .player-option:active{ transform: scale(.97); }
   .player-option.A{ background: var(--red); }
   .player-option.B{ background: var(--blue); }
-  .player-option.C{ background: var(--gold-dark); }
+  .player-option.C{ background: var(--gold); color:#0b2417; }
   .player-option.D{ background: var(--green); }
   .player-option.locked{ opacity:.35; pointer-events:none; }
   .player-option .shape{
     width:32px; height:32px; border-radius:8px; background: rgba(255,255,255,.25);
     display:flex; align-items:center; justify-content:center; font-weight:800;
   }
+  .player-option.C .shape{ background: rgba(11,36,23,.25); }
   .feedback-banner{
     font-size: clamp(28px, 8vw, 48px); font-weight:900; margin: 24px 0;
   }
@@ -281,36 +315,164 @@
   /* small footer note */
   .tiny-note{ font-size:12px; color: var(--muted); margin-top: 24px; }
   .pending-tag{
-    display:inline-block; background: var(--card); border:1px dashed var(--gold);
+    display:inline-block; background: rgba(255,255,255,.05); border:1px dashed var(--gold);
     color: var(--gold); font-size:11px; padding: 2px 8px; border-radius:6px; margin-left:6px;
   }
+  /* ============ LOBBY THEME - COPA DO MUNDO / SHOW DO BILHÃO ============ */
+  .lobby-screen{
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Manrope', system-ui, sans-serif;
+    padding: 0 !important;
+    display: block !important;
+  }
+  .lobby-bg-gradient{
+    position:absolute; inset:0;
+    background: radial-gradient(125% 120% at 50% -5%, #0d3a26 0%, #0a2519 42%, #07121f 100%);
+  }
+  .lobby-bg-pattern{
+    position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 44px, rgba(255,212,0,.045) 44px 46px),
+      repeating-linear-gradient(-45deg, transparent 0 44px, rgba(255,212,0,.045) 44px 46px);
+  }
+  .lobby-logo{
+    position:absolute; top:24px; left:24px; height:48px; width:auto; z-index:3;
+  }
+  @media (min-width: 900px){
+    .lobby-logo{ top:44px; left:52px; height:58px; }
+  }
+  .lobby-content{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; padding:24px; text-align:center;
+  }
+  @media (min-width: 900px){
+    .lobby-content{ padding:64px; }
+  }
+  .lobby-kicker{
+    font:800 12px Manrope; letter-spacing:.3em; text-transform:uppercase; color:#FFD400;
+    display:flex; align-items:center; gap:10px; white-space:nowrap;
+  }
+  @media (min-width: 900px){
+    .lobby-kicker{ font-size:15px; letter-spacing:.3em; gap:13px; }
+  }
+  .lobby-kicker .diamond{
+    display:inline-block; width:8px; height:8px; background:#FFD400; transform:rotate(45deg); flex-shrink:0;
+  }
+  .lobby-title{
+    margin:0; font-family:'Anton', sans-serif; font-weight:400;
+    font-size: clamp(40px, 7.6vw, 96px);
+    line-height:.9; text-transform:uppercase; color:#fff; letter-spacing:.01em; white-space:nowrap;
+  }
+  .lobby-title .accent{
+    color:#FFD400; text-shadow: 0 0 38px rgba(255,212,0,.6);
+  }
+  .lobby-divider{
+    width:220px; height:7px; border-radius:4px;
+    background: linear-gradient(90deg, #00913F, #FFD400 50%, #1C2D6B);
+  }
+  .lobby-subtitle{
+    margin:4px 0 6px; font:600 16px Manrope; color:#9fb1c4;
+  }
+  @media (min-width: 900px){
+    .lobby-subtitle{ font-size:22px; }
+  }
+  .lobby-qr-card{
+    background:#fff; padding:20px; border-radius:24px;
+    box-shadow: 0 0 0 5px rgba(255,212,0,.75), 0 28px 56px -14px rgba(0,0,0,.6);
+    line-height:0;
+  }
+  .lobby-qr-card img{ display:block; width:180px; height:180px; }
+  @media (min-width: 900px){
+    .lobby-qr-card img{ width:230px; height:230px; }
+  }
+  .lobby-counter{
+    display:inline-flex; align-items:center; gap:12px;
+    background: rgba(0,145,63,.2); border:1.5px solid rgba(0,200,110,.5); color:#FFD400;
+    font:800 16px Manrope; padding:11px 22px; border-radius:999px;
+  }
+  @media (min-width: 900px){
+    .lobby-counter{ font-size:21px; padding:11px 26px; }
+  }
+  .lobby-counter .dot{
+    width:12px; height:12px; border-radius:50%; background:#00C86E; box-shadow:0 0 12px #00C86E; flex-shrink:0;
+  }
+  .lobby-buttons{ display:flex; gap:16px; margin-top:6px; flex-wrap:wrap; justify-content:center; }
+  .lobby-btn-primary{
+    font:800 16px Manrope; color:#0b2417; background:#FFD400; border:none;
+    padding:14px 28px; border-radius:16px; box-shadow:0 7px 0 #C9A400; cursor:pointer;
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .lobby-btn-primary:active{ transform: translateY(4px); box-shadow:0 3px 0 #C9A400; }
+  .lobby-btn-secondary{
+    font:800 16px Manrope; color:#FFD400; background:transparent;
+    border:2px solid rgba(255,212,0,.85); padding:14px 24px; border-radius:16px; cursor:pointer;
+  }
+  @media (min-width: 900px){
+    .lobby-btn-primary, .lobby-btn-secondary{ font-size:22px; }
+    .lobby-btn-primary{ padding:18px 40px; }
+    .lobby-btn-secondary{ padding:18px 34px; }
+  }
+  .lobby-footnote{
+    margin:10px 0 0; font:500 13px/1.5 Manrope; color:#6b7d8f; max-width:720px;
+  }
+  .lobby-pending-tag{
+    border:1px dashed #FFD400; color:#FFD400; border-radius:6px; padding:2px 9px;
+    font-weight:700; font-size:12px; letter-spacing:.04em; display:inline-block;
+  }
+  .lobby-audio-panel{
+    text-align:left; background: rgba(255,255,255,.05); border:1px solid rgba(255,212,0,.3); border-radius:14px;
+    padding: 16px; margin-top: 8px; font-size:14px; max-width:480px; width:100%; color:#fff;
+  }
+  .lobby-audio-panel label{ display:block; margin: 10px 0 4px; color: #9fb1c4; }
+  .lobby-audio-panel input[type=file]{ width:100%; color: #fff; }
+  .lobby-audio-note{ font-size:12px; color: #6b7d8f; margin-top:4px; }
 </style>
+
 </head>
 <body>
 
 <!-- ============================================================ -->
 <!-- HOST: LOBBY (TELA INICIAL) -->
 <!-- ============================================================ -->
-<div id="screen-host-lobby" class="screen">
-  <div class="container">
-    <h1>Show do Milhão</h1>
-    <p class="subtitle">Escaneie o QR Code para entrar no jogo</p>
-    <div class="qr-box">
+<div id="screen-host-lobby" class="screen lobby-screen">
+  <div class="lobby-bg-gradient"></div>
+  <div class="lobby-bg-pattern"></div>
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="lobby-logo">
+
+  <div class="lobby-content">
+    <div class="lobby-kicker">
+      <span class="diamond"></span>
+      Copa do Mundo · Quiz ao vivo
+      <span class="diamond"></span>
+    </div>
+    <h1 class="lobby-title">Show do <span class="accent">Bilhão</span></h1>
+    <div class="lobby-divider"></div>
+    <p class="lobby-subtitle">Escaneie o QR Code para entrar no jogo</p>
+
+    <div class="lobby-qr-card">
       <img id="qr-img" src="" alt="QR Code para entrar no jogo">
     </div>
-    <div class="lobby-count"><span id="lobby-count">0</span> jogador(es) conectado(s)</div>
+
+    <div class="lobby-counter">
+      <span class="dot"></span>
+      <span id="lobby-count">0</span> jogador(es) conectado(s)
+    </div>
     <div class="lobby-players" id="lobby-players"></div>
 
-    <div style="margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-      <button class="btn" onclick="hostStartGame()">Iniciar jogo</button>
-      <button class="btn secondary" onclick="toggleAudioPanel()">Configurar áudio</button>
+    <div class="lobby-buttons">
+      <button class="lobby-btn-primary" onclick="hostStartGame()">Iniciar jogo</button>
+      <button class="lobby-btn-secondary" onclick="toggleAudioPanel()">Configurar áudio</button>
     </div>
 
-    <div id="audio-panel" class="audio-panel hidden">
+    <div id="audio-panel" class="lobby-audio-panel hidden">
       <strong>Música do telão (durante as perguntas)</strong>
       <label for="audio-bg">Trilha de tensão / contagem regressiva</label>
       <input type="file" id="audio-bg" accept="audio/*" onchange="loadAudio('bg', this)">
-      <div class="audio-note">
+      <div class="lobby-audio-note">
         Sugestão: trilhas de "game show tension" / "quiz countdown" em bancos livres (Pixabay Music, Mixkit, YouTube Audio Library). Pode usar a própria trilha do "Show do Milhão" se vocês possuírem os direitos de uso.
       </div>
 
@@ -319,17 +481,17 @@
 
       <label for="audio-wrong">Efeito sonoro - resposta errada / eliminação</label>
       <input type="file" id="audio-wrong" accept="audio/*" onchange="loadAudio('wrong', this)">
-      <div class="audio-note">Sugestão: "buzzer wrong answer" / "correct ding" — Mixkit ou Pixabay (gratuitos).</div>
+      <div class="lobby-audio-note">Sugestão: "buzzer wrong answer" / "correct ding" — Mixkit ou Pixabay (gratuitos).</div>
 
       <label for="audio-champion">Vinheta do campeão final (comemoração)</label>
       <input type="file" id="audio-champion" accept="audio/*" onchange="loadAudio('champion', this)">
-      <div class="audio-note">
-        <span class="pending-tag">PENDÊNCIA</span> Vinheta de gol/comemoração do time. Use um trecho que vocês possuam os direitos de uso (gravação própria do festejo, ou trilha de "vitória/comemoração" de banco livre). Vinhetas oficiais de emissoras/times são protegidas por direitos autorais.
+      <div class="lobby-audio-note">
+        <span class="lobby-pending-tag">PENDÊNCIA</span> Vinheta de gol/comemoração do time. Use um trecho que vocês possuam os direitos de uso (gravação própria do festejo, ou trilha de "vitória/comemoração" de banco livre). Vinhetas oficiais de emissoras/times são protegidas por direitos autorais.
       </div>
     </div>
 
-    <p class="tiny-note">
-      Avatares dos jogadores (estilo seleção brasileira, desenho animado) <span class="pending-tag">PENDÊNCIA</span> — aguardando arquivos. Por enquanto, cada jogador recebe um avatar com iniciais.
+    <p class="lobby-footnote">
+      Avatares dos jogadores (estilo seleção brasileira, desenho animado) <span class="lobby-pending-tag">PENDÊNCIA</span> — aguardando arquivos. Por enquanto, cada jogador recebe um avatar com iniciais.
     </p>
   </div>
 </div>
@@ -338,6 +500,7 @@
 <!-- HOST: QUESTION -->
 <!-- ============================================================ -->
 <div id="screen-host-question" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <div class="alive-banner">
       Ainda na disputa: <span class="num" id="alive-count">0</span> de <span id="total-count">0</span>
@@ -368,6 +531,7 @@
 <!-- HOST: RANKING -->
 <!-- ============================================================ -->
 <div id="screen-host-ranking" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <h2>Ranking</h2>
     <div class="alive-banner">
@@ -384,8 +548,9 @@
 <!-- HOST: CHAMPION -->
 <!-- ============================================================ -->
 <div id="screen-host-champion" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
-    <h2>🏆 Campeão do Show do Milhão! 🏆</h2>
+    <h2>🏆 Campeão do Show do Bilhão! 🏆</h2>
     <div class="champion-avatar" id="champion-avatar">🏆</div>
     <div class="champion-name" id="champion-name">---</div>
     <p class="subtitle" id="champion-points">0 pontos</p>
@@ -400,8 +565,10 @@
 <!-- PLAYER: JOIN -->
 <!-- ============================================================ -->
 <div id="screen-player-join" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
-    <h1>Show do Milhão</h1>
+    <h1>Show do <span style="color:#fff;">Bilhão</span></h1>
+    <div style="width:160px; height:5px; border-radius:4px; background:linear-gradient(90deg,#00913F,#FFD400 50%,#1C2D6B); margin:8px auto 20px;"></div>
     <p class="subtitle">Digite seu nome para entrar no jogo</p>
     <input type="text" id="player-name-input" placeholder="Seu nome" maxlength="16">
     <button class="btn full" onclick="playerJoin()">Entrar</button>
@@ -413,6 +580,7 @@
 <!-- PLAYER: WAITING -->
 <!-- ============================================================ -->
 <div id="screen-player-waiting" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <div class="champion-avatar" id="player-avatar" style="width:90px; height:90px; font-size:32px;"></div>
     <h2 id="player-welcome">Você está dentro!</h2>
@@ -424,6 +592,7 @@
 <!-- PLAYER: QUESTION -->
 <!-- ============================================================ -->
 <div id="screen-player-question" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <div class="status-bar">
       <div class="status-pill">Pontos: <b id="player-points-live">0</b></div>
@@ -449,6 +618,7 @@
 <!-- PLAYER: FEEDBACK -->
 <!-- ============================================================ -->
 <div id="screen-player-feedback" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <div class="feedback-banner" id="player-feedback-text">...</div>
     <div class="player-points" id="player-feedback-points"></div>
@@ -459,6 +629,7 @@
 <!-- PLAYER: ELIMINATED -->
 <!-- ============================================================ -->
 <div id="screen-player-eliminated" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <h2 style="color: var(--red);">Você foi eliminado!</h2>
     <p class="subtitle">Continue acompanhando o ranking no telão. Você pode ser chamado para votar no <b>resgate da audiência</b>.</p>
@@ -474,6 +645,7 @@
 <!-- PLAYER: CHAMPION -->
 <!-- ============================================================ -->
 <div id="screen-player-champion" class="screen hidden">
+  <img src="assets/logo-mci-btg-verdeamarelo.png" alt="MCI Capital · BTG Pactual" class="brand-logo">
   <div class="container">
     <h2 id="player-champion-title">Fim de jogo!</h2>
     <div class="champion-name" id="player-final-name">---</div>
