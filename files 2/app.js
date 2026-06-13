@@ -659,11 +659,14 @@ function listenToEvents() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('DEBUG hash:', window.location.hash, '| href:', window.location.href);
-  document.title = 'HASH=' + window.location.hash;
   if (window.location.hash === '#join') {
     goToPlayer();
   } else {
     goToHost();
   }
+  setTimeout(() => {
+    const lobby = document.getElementById('screen-host-lobby');
+    const join = document.getElementById('screen-player-join');
+    document.title = 'lobby-hidden=' + lobby.classList.contains('hidden') + ' join-hidden=' + join.classList.contains('hidden') + ' role=' + myRole;
+  }, 500);
 });
